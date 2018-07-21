@@ -1,57 +1,57 @@
 package com.projectadara.Controller;
 
+import com.projectadara.Model.Customer;
 import com.projectadara.Model.Device;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.projectadara.Repository.CustomerRepository;
+import com.projectadara.Repository.DeviceRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 public class DeviceController {
 
+    @Autowired DeviceRepository deviceRepository;
+    @Autowired CustomerRepository customerRepository;
+
     @RequestMapping("/deviceList")
-    public List<Device> getDeviceList(@RequestParam(value="customerId") long customerId) {
+    public Iterable<Device> getDeviceList(@RequestParam(value="customerId") int customerId) {
         System.out.println("Retrieving list of devices");
 
-        List<Device> deviceList = new ArrayList<Device>();
-
-        //TODO: query by customerId passed in here, building dummy list for now
-        deviceList.add(new Device(customerId, 0, "Camera0", Device.CAMERA));
-        deviceList.add(new Device(customerId, 1, "Camera1", Device.CAMERA));
-        deviceList.add(new Device(customerId, 2, "Camera2", Device.CAMERA));
-
-        deviceList.add(new Device(customerId, 6, "Microphone1", Device.MICROPHONE));
-        deviceList.add(new Device(customerId, 7, "Microphone2", Device.MICROPHONE));
-
-        deviceList.add(new Device(customerId, 9, "Sensor0", Device.SENSOR));
-        deviceList.add(new Device(customerId, 10, "Sensor1", Device.SENSOR));
-        deviceList.add(new Device(customerId, 11, "Sensor2", Device.SENSOR));
-        deviceList.add(new Device(customerId, 12, "Sensor3", Device.SENSOR));
-        deviceList.add(new Device(customerId, 13, "Sensor4", Device.SENSOR));
-
-        deviceList.add(new Device(customerId, 14, "Lock1", Device.LOCK));
+        //TODO: customerId param is useless right now, should be finding devices by customer Id
+        Iterable<Device> deviceList = deviceRepository.findAll();
 
         return deviceList;
     }
 
+    //TODO: should only be returning a single customer
+    @RequestMapping("/customer")
+    public Iterable<Customer> getCustomerInfo(@RequestParam(value="customerId") int customerId) {
+        System.out.println("Retrieving customer info");
+
+        //TODO: customerId param is useless right now, should be finding a single customer by customer Id
+        Iterable<Customer> customerList = customerRepository.findAll();
+
+        return customerList;
+    }
+
     /**
+     * TODO: should be using @PathVariable like so:
      * @RequestMapping(value = "/employees/{id}")
      *     public ResponseEntity<EmployeeVO> getEmployeeById (@PathVariable("id") int id)
      */
 
 
     @RequestMapping(value = "/deviceUrl", method = RequestMethod.GET)
-    public URI getDeviceURL(@RequestParam(value="customerId") long customerId, @RequestParam(value="deviceId") long deviceId) throws Exception {
+    public URI getDeviceURL(@RequestParam(value="customerId") int customerId, @RequestParam(value="deviceId") int deviceId) throws Exception {
         System.out.println("Retrieving device url for customer id: " + customerId + " and device id: " + deviceId);
 
         String responseString = null;
 
         //TODO: should retrieve deviceURL by making a REST call to the customer server, which we should have stored by customerID
         //for now faking it
-        switch((int)deviceId) {
+        switch((int)deviceId%3) {
             case 0:
                 responseString = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
                 break;

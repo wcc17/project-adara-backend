@@ -1,37 +1,46 @@
 package com.projectadara.Model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.*;
+
+@Entity(name = "device")
 public class Device {
     public static final int CAMERA = 1;
     public static final int MICROPHONE = 2;
     public static final int SENSOR = 3;
     public static final int LOCK = 4;
 
-    long customerId;
-    long deviceId;
-    String deviceName;
-    int deviceType;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    int id;
 
-    //TODO: temporary constructor until retrieving stuff from db or whatever
-    public Device(long customerId, long deviceId, String deviceName, int deviceType) {
-        this.customerId = customerId;
-        this.deviceId = deviceId;
-        this.deviceName = deviceName;
-        this.deviceType = deviceType;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id", nullable = false)
+    @JsonBackReference
+    Customer customer;
+
+    @Column(name = "name", nullable = false)
+    String name;
+
+    @Column(name = "type", nullable = false)
+    int type;
+
+    public int getId() {
+        return id;
     }
 
-    public long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public long getDeviceId() {
-        return deviceId;
+    public String getName() {
+        return name;
     }
 
-    public String getDeviceName() {
-        return deviceName;
-    }
-
-    public int getDeviceType() {
-        return deviceType;
+    public int getType() {
+        return type;
     }
 }
